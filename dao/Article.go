@@ -106,6 +106,35 @@ func (*Article) GetFrontList(req req.GetFrontArticles) ([]resp.FrontArticleVO, i
 	return list, total
 }
 
+func (*Article) GetSeqFrontList(req req.GetFrontArticles) ([]resp.FrontArticleVO, int64) {
+	list := make([]resp.FrontArticleVO, 0)
+	var total int64
+
+	db := DB.Table("article").
+		Select("id, title, content, img, type, is_top, created_at, category_id, read_count").
+		Where("is_delete = 0 AND status = 1")
+	if req.CategoryID != 0 {
+		db = db.Where("category_id", req.CategoryID)
+	}
+	if req.TagID != 0 {
+		db.Where("id IN (SELECT article_id FROM article_tag WHERE tag_id = ?)", req.TagID)
+	}
+
+	db.Count(&total)
+	db.Preload("Tags").
+		Preload("Category").
+		Order("id DESC").
+		//Limit(req.PageSize).Offset(req.PageSize * (req.PageNum - 1)).
+		Find(&list)
+	if len(list) > 0 && req.TagID != 0 {
+		list[0].Request = "标签——" + GetTagByID(req.TagID)
+	}
+	if len(list) > 0 && req.CategoryID != 0 {
+		list[0].Request = "分类——" + GetCategoryByID(req.CategoryID)
+	}
+	return list, total
+}
+
 // 查询最新的 n 篇文章
 func (*Article) GetNewestList(n int) []resp.RecommendArticleVO {
 	list := make([]resp.RecommendArticleVO, 0)

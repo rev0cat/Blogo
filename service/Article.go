@@ -209,7 +209,7 @@ func (*Article) GetArchiveList(req req.GetFrontArticles) ([][]resp.ArchiveVO, []
 	MonthList := make([]resp.ArchiveMonthVO, 0)
 	AddedMonth := make([]string, 0)
 	i := -1
-	articles, _ := articleDAO.GetFrontList(req)
+	articles, _ := articleDAO.GetSeqFrontList(req)
 	for _, article := range articles {
 		FormatMonth := article.CreatedAt.Format("2006-01")
 		if !utils2.Contains(AddedMonth, FormatMonth) {
