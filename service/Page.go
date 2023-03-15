@@ -56,7 +56,7 @@ func (*Page) GetPage() []string {
 	list = utils.Redis.SMembers(KeyPage)
 	if len(list) == 0 {
 		pageList = dao.List([]model.Page{}, "*", "", "")
-		for i, _ := range pageList {
+		for i := range pageList {
 			utils.Redis.ZAdd(KeyPage, pageList[i].Cover, float64(len(pageList)-i))
 			list = append(list, pageList[i].Cover)
 		}
