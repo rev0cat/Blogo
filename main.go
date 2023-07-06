@@ -14,12 +14,14 @@ func main() {
 
 	// 前台接口服务
 	g.Go(func() error {
-		return routes.FrontendServer().ListenAndServe()
+		return routes.FrontendServer().
+			ListenAndServeTLS("../ssl/blogo.revocat.tech_bundle.crt", "../ssl/blogo.revocat.tech.key")
 	})
 
 	// 后台接口服务
 	g.Go(func() error {
-		return routes.BackendServer().ListenAndServe()
+		return routes.BackendServer().
+			ListenAndServeTLS("../ssl/blogo.revocat.tech_bundle.crt", "../ssl/blogo.revocat.tech.key")
 	})
 
 	if err := g.Wait(); err != nil {
